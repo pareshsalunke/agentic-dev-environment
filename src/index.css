@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* §B6 — dark editor canvas, panels, hairlines, text */
+  --color-canvas: #0e1116;
+  --color-panel: #161b22;
+  --color-raised: #1c232d;
+  --color-hairline: #2a313c;
+  --color-ink: #e6edf3;
+  --color-mute: #8b949e;
+  --color-faint: #6e7681;
+
+  /* §B6 — diff colors */
+  --color-add: #7ee2a8;
+  --color-addbg: #1f3d2b;
+  --color-del: #ff9aa2;
+  --color-delbg: #3d1f23;
+
+  --color-warn: #e3b341;
+
+  /* one accent per brand, set on <html data-brand> */
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+}
+
+/* Brand accents (§B6): accent is used only for primary actions, the
+   Northstar, and provenance chips. */
+:root,
+[data-brand="efood"] {
+  --accent: #e5484d; /* #D61F26-adjacent, lifted for dark canvas */
+  --accent-ink: #ffffff;
+}
+[data-brand="glovo"] {
+  --accent: #ffc244;
+  --accent-ink: #1a1407;
+}
+[data-brand="talabat"] {
+  --accent: #ff5a00;
+  --accent-ink: #190a02;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-canvas font-sans text-ink antialiased;
+  font-size: 14px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-hairline) transparent;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Motion (§B6): 150–250ms ease-out only. Deterministic, no randomness. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise-in 200ms ease-out both;
+}
+
+/* skeleton shimmer without gradients (§B6 bans gradients) */
+@keyframes skel-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+.skel {
+  animation: skel-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.caret::after {
+  content: "";
+  display: inline-block;
+  width: 1.5px;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--color-ink);
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+/* §B6: respect prefers-reduced-motion by jumping to end state */
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .skel,
+  .caret::after {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
